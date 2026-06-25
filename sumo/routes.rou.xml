@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes>
+    <vType id="car"  accel="2.6" decel="4.5" sigma="0.5" length="5"  maxSpeed="13.89"/>
+    <vType id="bus"  accel="1.5" decel="3.0" sigma="0.3" length="12" maxSpeed="10.00"/>
+    <vType id="moto" accel="3.0" decel="5.0" sigma="0.6" length="2"  maxSpeed="15.00"/>
+
+    <route id="r_EO"  edges="E1 E2"/>
+    <route id="r_NS"  edges="E3 E4"/>
+    <route id="r_OE"  edges="E2 E1r"/>
+    <route id="r_SN"  edges="E4 E3r"/>
+
+    <flow id="f1" type="car"  route="r_EO" begin="0"   end="600"  vehsPerHour="400" departLane="best"/>
+    <flow id="f2" type="car"  route="r_NS" begin="0"   end="600"  vehsPerHour="350" departLane="best"/>
+    <flow id="f3" type="bus"  route="r_EO" begin="0"   end="600"  vehsPerHour="40"  departLane="best"/>
+    <flow id="f4" type="moto" route="r_NS" begin="0"   end="600"  vehsPerHour="150" departLane="best"/>
+    <flow id="f5" type="car"  route="r_OE" begin="0"   end="600"  vehsPerHour="300" departLane="best"/>
+    <flow id="f6" type="car"  route="r_SN" begin="0"   end="600"  vehsPerHour="280" departLane="best"/>
+    <flow id="f7" type="car"  route="r_EO" begin="600" end="1800" vehsPerHour="150" departLane="best"/>
+    <flow id="f8" type="car"  route="r_NS" begin="600" end="1800" vehsPerHour="120" departLane="best"/>
+    <flow id="f9" type="moto" route="r_OE" begin="600" end="1800" vehsPerHour="80"  departLane="best"/>
+</routes>

@@ -1,0 +1,38 @@
+timestamp,zona,tipo,gravedad,activo,hora
+2026-06-25 01:08:00,Laureles,Otro,Solo daños,1,1
+2026-06-25 09:56:00,Estadio/Atanasio,Atropello,Solo daños,1,9
+2026-06-25 11:47:00,Estadio/Atanasio,Choque,Solo daños,1,11
+2026-06-25 14:14:00,Estadio/Atanasio,Otro,Con muertos,1,14
+2026-06-25 17:50:00,La Macarena,Choque,Con heridos,1,17
+2026-06-26 07:19:00,Bello,Volcamiento,Solo daños,1,7
+2026-06-26 12:15:00,Itagüí,Caída Ocupante,Solo daños,1,12
+2026-06-26 18:59:00,Estadio/Atanasio,Choque,Con heridos,1,18
+2026-06-27 07:12:00,Av. 80,Choque,Solo daños,1,7
+2026-06-27 15:54:00,Estadio/Atanasio,Caída Ocupante,Solo daños,1,15
+2026-06-27 18:12:00,Itagüí,Caída Ocupante,Solo daños,1,18
+2026-06-27 21:03:00,Estadio/Atanasio,Choque,Con heridos,1,21
+2026-06-28 02:09:00,Calle 33,Volcamiento,Solo daños,1,2
+2026-06-28 02:27:00,Calle 33,Otro,Solo daños,1,2
+2026-06-28 04:51:00,Itagüí,Choque,Solo daños,1,4
+2026-06-28 05:37:00,La Macarena,Caída Ocupante,Solo daños,1,5
+2026-06-28 15:21:00,Laureles,Choque,Con heridos,1,15
+2026-06-29 09:49:00,Av. 80,Caída Ocupante,Solo daños,1,9
+2026-06-29 12:16:00,La Macarena,Atropello,Solo daños,1,12
+2026-06-29 12:22:00,La Macarena,Volcamiento,Solo daños,1,12
+2026-06-29 12:38:00,Guayabal,Choque,Con heridos,1,12
+2026-06-29 15:54:00,Av. Regional,Atropello,Solo daños,1,15
+2026-06-29 16:53:00,El Poblado,Choque,Solo daños,1,16
+2026-06-29 19:38:00,Laureles,Caída Ocupante,Solo daños,1,19
+2026-06-30 00:42:00,La Macarena,Atropello,Solo daños,1,0
+2026-06-30 06:12:00,Av. Regional,Otro,Con heridos,1,6
+2026-06-30 10:33:00,Itagüí,Caída Ocupante,Con heridos,1,10
+2026-06-30 13:56:00,Itagüí,Volcamiento,Solo daños,1,13
+2026-06-30 16:39:00,Calle 33,Caída Ocupante,Solo daños,1,16
+2026-06-30 17:12:00,Guayabal,Otro,Solo daños,1,17
+2026-06-30 19:08:00,Laureles,Choque,Con heridos,1,19
+2026-06-30 19:09:00,Guayabal,Caída Ocupante,Solo daños,1,19
+2026-07-01 01:39:00,Calle 33,Caída Ocupante,Solo daños,1,1
+2026-07-01 06:42:00,Av. 80,Choque,Solo daños,1,6
+2026-07-01 12:50:00,Laureles,Choque,Solo daños,1,12
+2026-07-01 18:10:00,La Macarena,Choque,Solo daños,1,18
+2026-07-01 20:20:00,La Macarena,Atropello,Solo daños,1,20
