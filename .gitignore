@@ -1,0 +1,18 @@
+# Modelo entrenado (pesado)
+model/sipom_model.pt
+sumo/sipom_ppo.zip
+
+# Datasets históricos (datos sensibles)
+Datasets/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# VS Code
+.vscode/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
