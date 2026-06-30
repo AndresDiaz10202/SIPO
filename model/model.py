@@ -92,7 +92,7 @@ def predecir(modelo: SIPOMModel, zona: str, hora: int, dia_semana: int,
              incidentes_hora: int, device: str = 'cpu') -> dict:
     """
     Hace una predicción para una zona y franja horaria.
-    Retorna dict con clase, etiqueta, color y probabilidades.
+    Retorna dict con clase, etiqueta, color, probabilidades y factor principal.
     """
     zona_id = ZONA_ID_MAP.get(zona, 0)
 
@@ -108,6 +108,10 @@ def predecir(modelo: SIPOMModel, zona: str, hora: int, dia_semana: int,
         probs  = torch.softmax(logits, dim=1).squeeze().tolist()
         clase  = int(torch.argmax(logits, dim=1).item())
 
+    factor_principal = _factor_dominante(
+        velocidad_kmh, volumen_vehiculos, incidentes_hora, lluvia, hora
+    )
+
     return {
         'clase':         clase,
         'etiqueta':      ETIQUETAS[clase],
@@ -116,5 +120,40 @@ def predecir(modelo: SIPOMModel, zona: str, hora: int, dia_semana: int,
             'Fluido':   round(probs[0], 3),
             'Moderado': round(probs[1], 3),
             'Crítico':  round(probs[2], 3),
-        }
+        },
+        'factor_principal': factor_principal,
     }
+
+
+def _factor_dominante(velocidad_kmh, volumen_vehiculos, incidentes_hora, lluvia, hora) -> str:
+    """
+    Aproximación simple e interpretable de qué factor pesa más en
+    el contexto actual, basada en umbrales de referencia.
+    No es una atribución exacta del modelo, es una guía orientativa.
+    """
+    factores = []
+
+    if velocidad_kmh < 20:
+        factores.append(('Velocidad muy baja', 3))
+    elif velocidad_kmh < 30:
+        factores.append(('Velocidad reducida', 2))
+
+    if volumen_vehiculos > 1800:
+        factores.append(('Volumen vehicular alto', 3))
+    elif volumen_vehiculos > 1200:
+        factores.append(('Volumen vehicular moderado', 2))
+
+    if incidentes_hora > 0:
+        factores.append(('Incidentes activos en la zona', 3 + incidentes_hora))
+
+    if lluvia:
+        factores.append(('Lluvia activa', 2))
+
+    if 7 <= hora <= 9 or 17 <= hora <= 19:
+        factores.append(('Hora pico', 2))
+
+    if not factores:
+        return 'Condiciones normales — sin factores de riesgo destacados'
+
+    factores.sort(key=lambda x: x[1], reverse=True)
+    return factores[0][0]

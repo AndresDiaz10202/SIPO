@@ -33,24 +33,29 @@ DIAS  = [HOY + timedelta(days=i) for i in range(7)]
 def generar_clima():
     filas = []
     for dia in DIAS:
-        for franja in FRANJAS:
-            hora = int(franja.split(':')[0])
+        for hora in range(24):
             # Temperatura varía por hora: más fría de madrugada, más cálida al mediodía
             temp_base = 18 + 8 * np.sin((hora - 6) * np.pi / 12)
-            temp      = round(temp_base + np.random.normal(0, 1.2), 1)
-            # Lluvia más probable en la tarde (15-18h) en Medellín
-            prob_lluvia = 0.6 if 14 <= hora <= 18 else 0.15
-            lluvia      = int(np.random.random() < prob_lluvia)
-            mm_lluvia   = round(np.random.uniform(1.0, 25.0), 1) if lluvia else 0.0
+            temp      = round(temp_base + np.random.normal(0, 1.0), 1)
+
+            # Probabilidad de lluvia por hora — más alta en la tarde en Medellín
+            prob_lluvia_hora = {
+                0: 0.05, 1: 0.05, 2: 0.05, 3: 0.05, 4: 0.05, 5: 0.08,
+                6: 0.10, 7: 0.10, 8: 0.12, 9: 0.15, 10: 0.18, 11: 0.22,
+                12: 0.28, 13: 0.35, 14: 0.50, 15: 0.60, 16: 0.62,
+                17: 0.55, 18: 0.40, 19: 0.25, 20: 0.15, 21: 0.10,
+                22: 0.08, 23: 0.06,
+            }
+            lluvia    = int(np.random.random() < prob_lluvia_hora[hora])
+            mm_lluvia = round(np.random.uniform(1.0, 25.0), 1) if lluvia else 0.0
 
             filas.append({
-                'fecha':      dia.strftime('%Y-%m-%d'),
-                'franja':     franja,
-                'hora':       hora,
-                'dia_semana': dia.weekday(),
+                'fecha':       dia.strftime('%Y-%m-%d'),
+                'hora':        hora,
+                'dia_semana':  dia.weekday(),
                 'temperatura': temp,
-                'lluvia':     lluvia,
-                'mm_lluvia':  mm_lluvia,
+                'lluvia':      lluvia,
+                'mm_lluvia':   mm_lluvia,
             })
 
     df = pd.DataFrame(filas)

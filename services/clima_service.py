@@ -6,18 +6,15 @@ RUTA = os.path.join(os.path.dirname(__file__), '..', 'data', 'simulados', 'sim_c
 
 def get_clima(fecha: str, hora: int) -> dict:
     """
-    Retorna temperatura y lluvia para una fecha y hora dadas.
+    Retorna temperatura y lluvia para una fecha y hora exactas.
     fecha: 'YYYY-MM-DD'
     hora:  int (0-23)
     """
     df = pd.read_csv(RUTA, encoding='utf-8')
 
-    # Buscar la franja horaria más cercana a la hora pedida
-    df['diff'] = (df['hora'] - hora).abs()
-    fila = df[df['fecha'] == fecha].nsmallest(1, 'diff')
+    fila = df[(df['fecha'] == fecha) & (df['hora'] == hora)]
 
     if fila.empty:
-        # Si no hay datos para esa fecha usar promedios generales
         return {
             'temperatura': round(df['temperatura'].mean(), 1),
             'lluvia':      int(df['lluvia'].mode()[0]),
@@ -33,8 +30,8 @@ def get_clima(fecha: str, hora: int) -> dict:
 
 def get_clima_dia(fecha: str) -> pd.DataFrame:
     """
-    Retorna todas las franjas horarias de un día completo.
+    Retorna las 24 horas de clima de un día completo.
     """
     df = pd.read_csv(RUTA, encoding='utf-8')
-    resultado = df[df['fecha'] == fecha].copy()
+    resultado = df[df['fecha'] == fecha].sort_values('hora')
     return resultado.reset_index(drop=True)

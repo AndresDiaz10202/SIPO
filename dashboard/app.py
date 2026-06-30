@@ -73,6 +73,10 @@ def cargar():
 
 modelo = cargar()
 
+# ── Historial de predicciones en sesión ──
+if 'historial_predicciones' not in st.session_state:
+    st.session_state.historial_predicciones = []
+
 
 # ──────────────────────────────────────────────
 # Sidebar — controles
@@ -91,12 +95,27 @@ with st.sidebar:
     zona_sel  = st.selectbox('Zona', ZONAS_SIPOM)
 
     st.divider()
+
+    if st.session_state.historial_predicciones:
+        st.caption('🕓 Consultas recientes')
+        for h in reversed(st.session_state.historial_predicciones[-6:]):
+            st.markdown(
+                f"<small style='color:{h['color']}'>●</small> "
+                f"<small>{h['zona']} · {h['hora']:02d}:00 · {h['nivel']}</small>",
+                unsafe_allow_html=True
+            )
+
+    st.divider()
     st.caption('Secretaría de Movilidad — Medellín')
 
 
 fecha_str = fecha_sel.strftime('%Y-%m-%d')
 dia_semana = fecha_sel.weekday()
 mes        = fecha_sel.month
+
+NOMBRES_DIA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+nombre_dia_actual = NOMBRES_DIA[dia_semana]
+es_finde = dia_semana >= 5
 
 
 # ──────────────────────────────────────────────
@@ -120,6 +139,23 @@ resultado = predecir(
     incidentes_hora   = incidentes,
 )
 
+# Registrar esta consulta en el historial (evitar duplicados consecutivos)
+entrada_actual = {
+    'hora_consulta': datetime.now().strftime('%H:%M:%S'),
+    'zona':          zona_sel,
+    'fecha':         fecha_str,
+    'hora':          hora_sel,
+    'nivel':         resultado['etiqueta'],
+    'color':         resultado['color'],
+}
+
+if not st.session_state.historial_predicciones or \
+   st.session_state.historial_predicciones[-1]['zona'] != zona_sel or \
+   st.session_state.historial_predicciones[-1]['hora'] != hora_sel or \
+   st.session_state.historial_predicciones[-1]['fecha'] != fecha_str:
+    st.session_state.historial_predicciones.append(entrada_actual)
+    st.session_state.historial_predicciones = st.session_state.historial_predicciones[-15:]  # máximo 15
+
 
 # ──────────────────────────────────────────────
 # Header
@@ -127,6 +163,12 @@ resultado = predecir(
 
 st.title('🚦 SIPOM — Predicción de Congestión Vial')
 st.caption(f'Medellín · {fecha_str} · {hora_sel:02d}:00 · Zona: {zona_sel}')
+
+if es_finde:
+    st.info(f'📅 Hoy es **{nombre_dia_actual}** — fin de semana. El tráfico suele ser entre 30% y 40% menor que en días laborales.')
+else:
+    st.info(f'📅 Hoy es **{nombre_dia_actual}** — día laboral. Esperar picos de congestión en horas pico (7-9am y 5-7pm).')
+
 st.divider()
 
 
@@ -159,6 +201,69 @@ with col4:
 
 with col5:
     st.metric('⚠️ Incidentes', incidentes)
+
+st.divider()
+
+# ──────────────────────────────────────────────
+# Fila 1.5 — Comparativa entre zonas
+# ──────────────────────────────────────────────
+
+st.subheader('🏙️ Comparativa de Zonas — Hora Actual')
+
+filas_comparativa = []
+for z in ZONAS_SIPOM:
+    f_z = get_flujo(z, fecha_str, hora_sel)
+    c_z = get_clima(fecha_str, hora_sel)
+    i_z = get_incidentes_zona(z, fecha_str, hora_sel)
+    r_z = predecir(
+        modelo=modelo, zona=z, hora=hora_sel,
+        dia_semana=dia_semana, mes=mes,
+        temperatura=c_z['temperatura'], lluvia=c_z['lluvia'],
+        velocidad_kmh=f_z['velocidad_kmh'],
+        volumen_vehiculos=f_z['volumen_vehiculos'],
+        incidentes_hora=i_z,
+    )
+    filas_comparativa.append({
+        'zona':       z,
+        'nivel':      r_z['clase'],
+        'etiqueta':   r_z['etiqueta'],
+        'velocidad':  f_z['velocidad_kmh'],
+        'es_actual':  z == zona_sel,
+    })
+
+df_comp = pd.DataFrame(filas_comparativa).sort_values('nivel', ascending=False)
+
+fig_comp = go.Figure(go.Bar(
+    x=df_comp['nivel'],
+    y=df_comp['zona'],
+    orientation='h',
+    marker_color=[COLORES[n] for n in df_comp['nivel']],
+    text=df_comp['etiqueta'],
+    textposition='outside',
+    hovertemplate='%{y}<br>Velocidad: %{customdata} km/h<extra></extra>',
+    customdata=df_comp['velocidad'],
+))
+
+# Resaltar la zona seleccionada con borde
+for idx, row in df_comp.iterrows():
+    if row['es_actual']:
+        fig_comp.add_annotation(
+            x=row['nivel'] + 0.15, y=row['zona'],
+            text='◀ seleccionada', showarrow=False,
+            font=dict(color='white', size=10),
+        )
+
+fig_comp.update_layout(
+    xaxis=dict(title='Nivel de congestión', range=[0, 3], tickvals=[0, 1, 2],
+               ticktext=['Fluido', 'Moderado', 'Crítico']),
+    yaxis=dict(title=''),
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='white'),
+    height=350,
+    margin=dict(l=10, r=80, t=10, b=10),
+)
+st.plotly_chart(fig_comp, use_container_width=True)
 
 st.divider()
 
@@ -254,6 +359,15 @@ with col_probs:
         margin=dict(l=10, r=40, t=10, b=10),
     )
     st.plotly_chart(fig_probs, use_container_width=True)
+
+    st.markdown(
+        f"<div style='background:#ffffff11; border-radius:8px; padding:0.6rem; "
+        f"margin-top:0.5rem;'>"
+        f"<small style='color:#aaa'>🔍 Factor principal:</small><br>"
+        f"<b>{resultado['factor_principal']}</b>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
 
     st.divider()
     st.subheader('📋 Eventos hoy')
