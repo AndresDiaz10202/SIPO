@@ -1,4 +1,4 @@
-# SIPOM — Sistema Inteligente de Predicción y Optimización de Movilidad Urbana
+# SIPO — Sistema Inteligente de Predicción y Optimización de Movilidad Urbana
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange)
@@ -11,9 +11,9 @@ y optimización adaptativa de semáforos en Medellín, Colombia.
 
 ---
 
-## ¿Qué hace SIPOM?
+## ¿Qué hace SIPO?
 
-SIPOM cruza cuatro fuentes de datos por zona y franja horaria para predecir
+SIPO cruza cuatro fuentes de datos por zona y franja horaria para predecir
 el nivel de congestión vial (fluido / moderado / crítico) y genera recomendaciones
 operativas para agentes de tránsito en tiempo real.
 
@@ -37,6 +37,7 @@ streamlit run dashboard/app.py
 
 ## Estructura del proyecto
 
+```
 SIPO/
 ├── Datasets/                          # Datos históricos de entrenamiento
 │   ├── incidentes_viales_medellin.csv
@@ -71,8 +72,9 @@ SIPO/
 ├── notebooks/
 │   └── EDA_y_entrenamiento.ipynb      # EDA y entrenamiento en Colab
 │
-├── dashboard/
+└── dashboard/
     └── app.py                         # Dashboard Streamlit
+```
 
 ---
 
@@ -95,8 +97,8 @@ SIPO/
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/SIPOM.git
-cd SIPOM
+git clone https://github.com/AndresDiaz10202/SIPO.git
+cd SIPO
 
 # 2. Instalar dependencias
 pip install torch pandas numpy streamlit folium streamlit-folium plotly stable-baselines3 traci
@@ -116,36 +118,26 @@ streamlit run dashboard/app.py
 ## Modelo predictivo
 
 **Arquitectura:**
-
+```
 Input (9 features):
+  zona_id        → Embedding(10, 8)
+  hora           → int (0-23)
+  dia_semana     → int (0-6)
+  mes            → int (1-12)
+  temperatura    → float (°C)
+  lluvia         → int (0/1)
+  velocidad_kmh  → float
+  volumen_vehiculos → int
+  incidentes_hora   → int
 
-zona_id        → Embedding(10, 8)
-
-hora           → int (0-23)
-
-dia_semana     → int (0-6)
-
-mes            → int (1-12)
-
-temperatura    → float (°C)
-
-lluvia         → int (0/1)
-
-velocidad_kmh  → float
-
-volumen_vehiculos → int
-
-incidentes_hora   → int
 Red:
+  Dense 256 → BatchNorm → ReLU → Dropout 0.3
+  Dense 128 → BatchNorm → ReLU → Dropout 0.3
+  Dense 64  → BatchNorm → ReLU
+  Output: 3 clases (fluido / moderado / crítico)
 
-Dense 256 → BatchNorm → ReLU → Dropout 0.3
-
-Dense 128 → BatchNorm → ReLU → Dropout 0.3
-
-Dense 64  → BatchNorm → ReLU
-
-Output: 3 clases (fluido / moderado / crítico)
 Accuracy en test: ~94%
+```
 
 **Entrenamiento:**
 - Dataset: cruce de 4 fuentes históricas (~200K registros)
@@ -155,7 +147,7 @@ Accuracy en test: ~94%
 
 ---
 
-## Zonas SIPOM
+## Zonas SIPO
 
 | Zona | Comunas |
 |---|---|
@@ -200,7 +192,7 @@ La arquitectura está diseñada para esa integración sin cambiar el modelo ni e
 
 ## Impacto esperado
 
-SIPOM está diseñado para ser adoptado por la Secretaría de Movilidad de Medellín
+SIPO está diseñado para ser adoptado por la Secretaría de Movilidad de Medellín
 como herramienta de apoyo a la toma de decisiones operativas, con potencial de
 integración futura al sistema SIMTRÁFICO de la ciudad.
 

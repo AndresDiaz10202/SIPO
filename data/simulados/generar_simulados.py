@@ -121,12 +121,15 @@ def generar_flujo():
     for dia in DIAS:
         for hora in range(24):
             # Factor de hora pico: mañana 7-9h y tarde 17-19h
-            if 7 <= hora <= 9 or 17 <= hora <= 19:
-                factor_hora = np.random.uniform(1.4, 1.8)
-            elif 22 <= hora or hora <= 5:
-                factor_hora = np.random.uniform(0.2, 0.4)
-            else:
-                factor_hora = np.random.uniform(0.8, 1.2)
+            # Curva horaria más granular — pico real de Medellín
+            curva_hora = {
+                0: 0.20, 1: 0.15, 2: 0.12, 3: 0.10, 4: 0.15, 5: 0.35,
+                6: 0.75, 7: 1.55, 8: 1.70, 9: 1.30, 10: 1.00, 11: 0.95,
+                12: 1.10, 13: 1.05, 14: 0.90, 15: 0.95, 16: 1.15,
+                17: 1.50, 18: 1.75, 19: 1.45, 20: 1.05, 21: 0.70,
+                22: 0.45, 23: 0.30,
+            }
+            factor_hora = curva_hora[hora] * np.random.uniform(0.92, 1.08)
 
             # Factor fin de semana
             factor_dia = 0.65 if dia.weekday() >= 5 else 1.0

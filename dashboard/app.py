@@ -25,14 +25,14 @@ from services.incidentes_service import get_incidentes_zona, get_incidentes_dia,
 
 # ── Coordenadas de cada zona para el mapa ──
 COORDENADAS = {
-    'Av. 80':            (6.2518, -75.6050),
-    'Av. Regional':      (6.2350, -75.5900),
-    'Calle 33':          (6.2530, -75.5700),
-    'El Poblado':        (6.2100, -75.5680),
-    'Guayabal':          (6.2150, -75.5950),
-    'Laureles':          (6.2450, -75.6050),
-    'Estadio/Atanasio':  (6.2570, -75.5980),
-    'La Macarena':       (6.2600, -75.5650),
+    'Av. 80':            (6.2520, -75.5950),
+    'Av. Regional':      (6.2200, -75.5780),
+    'Calle 33':          (6.2280, -75.5650),
+    'El Poblado':        (6.2080, -75.5680),
+    'Guayabal':          (6.2230, -75.5870),
+    'Laureles':          (6.2440, -75.5970),
+    'Estadio/Atanasio':  (6.2540, -75.5910),
+    'La Macarena':       (6.2495, -75.5805),
     'Itagüí':            (6.1850, -75.5990),
     'Bello':             (6.3350, -75.5570),
 }
