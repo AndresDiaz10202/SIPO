@@ -83,9 +83,7 @@ if 'historial_predicciones' not in st.session_state:
 # ──────────────────────────────────────────────
 
 with st.sidebar:
-    st.image('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/'
-             'Coat_of_arms_of_Medell%C3%ADn.svg/200px-Coat_of_arms_of_Medell%C3%ADn.svg.png',
-             width=80)
+    st.markdown("<h1 style='font-size:2.5rem; margin:0;'>🚦</h1>", unsafe_allow_html=True)
     st.title('SIPOM')
     st.caption('Sistema Inteligente de Predicción y Optimización de Movilidad Urbana')
     st.divider()
@@ -305,13 +303,14 @@ with col_mapa:
         color_hex = res['color']
         nivel     = res['etiqueta']
 
-        folium.CircleMarker(
+        folium.Circle(
             location=[lat, lon],
-            radius=18,
+            radius=350,             # metros — escala con el zoom del mapa
             color=color_hex,
             fill=True,
             fill_color=color_hex,
-            fill_opacity=0.7,
+            fill_opacity=0.5,
+            weight=2,
             popup=folium.Popup(
                 f"<b>{zona}</b><br>"
                 f"Nivel: {nivel}<br>"
@@ -326,10 +325,11 @@ with col_mapa:
         folium.Marker(
             location=[lat, lon],
             icon=folium.DivIcon(
-                html=f"<div style='font-size:9px; color:white; "
+                html=f"<div style='font-size:11px; color:white; "
                      f"font-weight:bold; text-align:center; "
-                     f"width:80px; margin-left:-40px;'>{zona}</div>",
-                icon_size=(80, 20),
+                     f"text-shadow: 1px 1px 2px black; "
+                     f"width:100px; margin-left:-50px;'>{zona}</div>",
+                icon_size=(100, 20),
                 icon_anchor=(0, 0),
             )
         ).add_to(m)

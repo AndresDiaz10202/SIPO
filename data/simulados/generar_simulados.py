@@ -127,29 +127,40 @@ def generar_flujo():
         for hora in range(24):
             # Factor de hora pico: mañana 7-9h y tarde 17-19h
             # Curva horaria más granular — pico real de Medellín
-            curva_hora = {
-                0: 0.20, 1: 0.15, 2: 0.12, 3: 0.10, 4: 0.15, 5: 0.35,
-                6: 0.75, 7: 1.55, 8: 1.70, 9: 1.30, 10: 1.00, 11: 0.95,
-                12: 1.10, 13: 1.05, 14: 0.90, 15: 0.95, 16: 1.15,
-                17: 1.50, 18: 1.75, 19: 1.45, 20: 1.05, 21: 0.70,
-                22: 0.45, 23: 0.30,
+            # Curva horaria laboral — picos reales de Medellín
+            curva_laboral = {
+                0: 0.12, 1: 0.08, 2: 0.06, 3: 0.06, 4: 0.10, 5: 0.25,
+                6: 0.65, 7: 1.70, 8: 1.95, 9: 1.15, 10: 0.80, 11: 0.78,
+                12: 0.95, 13: 0.88, 14: 0.75, 15: 0.82, 16: 1.20,
+                17: 1.85, 18: 2.10, 19: 1.55, 20: 0.85, 21: 0.50,
+                22: 0.30, 23: 0.18,
             }
+            curva_finde = {
+                0: 0.20, 1: 0.15, 2: 0.10, 3: 0.08, 4: 0.08, 5: 0.10,
+                6: 0.15, 7: 0.25, 8: 0.40, 9: 0.55, 10: 0.65, 11: 0.75,
+                12: 0.85, 13: 0.85, 14: 0.80, 15: 0.80, 16: 0.75,
+                17: 0.70, 18: 0.65, 19: 0.55, 20: 0.45, 21: 0.35,
+                22: 0.30, 23: 0.20,
+            }
+
+            curva_hora = curva_finde if dia.weekday() >= 5 else curva_laboral
             factor_hora = curva_hora[hora] * np.random.uniform(0.92, 1.08)
 
             # Factor fin de semana
             factor_dia = 0.65 if dia.weekday() >= 5 else 1.0
 
             for zona in ZONAS:
-                vel = velocidad_base[zona] / factor_hora * factor_dia
+                vel = velocidad_base[zona] / (factor_hora ** 1.8) * factor_dia
+                vel = min(vel, velocidad_base[zona] * 0.95)
                 vel = round(vel + np.random.normal(0, 3), 1)
-                vol = int(volumen_base[zona] * factor_hora * factor_dia
+                vol = int(volumen_base[zona] * min(factor_hora, 1.6) * factor_dia
                           + np.random.randint(-100, 100))
 
-                if vel < 15:
+                if vel < 20:
                     flujo = 'muy_alto'
-                elif vel < 25:
+                elif vel < 30:
                     flujo = 'alto'
-                elif vel < 38:
+                elif vel < 42:
                     flujo = 'medio'
                 else:
                     flujo = 'bajo'
